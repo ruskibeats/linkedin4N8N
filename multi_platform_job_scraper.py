@@ -18,6 +18,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from linkedin_scraper import BrowserManager, JobSearchScraper, JobScraper, ConsoleCallback
+from indeed_scraper import scrape_indeed_jobs
 
 
 def load_config(config_file: str = "multi_platform_config.json") -> dict:
