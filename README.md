@@ -94,14 +94,29 @@ and you will see the scraping in action.
 
 ## Installation
 
+### Step 1: Clone the Repository
+
 ```bash
-pip install linkedin-scraper
+git clone https://github.com/joyism/linkedin_scraper.git
+cd linkedin_scraper
 ```
 
-### Install Playwright browsers:
+### Step 2: Install Dependencies
+
+```bash
+pip install -e .
+```
+
+### Step 3: Install Playwright Browsers
 
 ```bash
 playwright install chromium
+```
+
+### Step 4: Verify Installation
+
+```bash
+python -c "from linkedin_scraper import BrowserManager; print('✓ Installation successful')"
 ```
 
 ## Quick Start
@@ -207,38 +222,140 @@ asyncio.run(scrape_company_posts())
 
 ## Authentication
 
-LinkedIn requires authentication. You need to create a session file first:
+LinkedIn requires authentication to access profiles, jobs, and company data. You need to create a session file with your LinkedIn cookies/credentials.
 
-### Option 1: Manual Login Script
+### Method 1: Manual Login (RECOMMENDED - Most Reliable)
+
+This is the easiest and most reliable method for most users.
+
+#### Step 1: Run the Session Creator
+
+```bash
+python samples/create_session.py
+```
+
+#### Step 2: Complete Login in Browser
+
+The script will open a Chromium browser window and navigate to LinkedIn login.
+
+**You must:**
+- Enter your LinkedIn email and password
+- Complete any 2FA verification (if enabled)
+- Solve any CAPTCHA challenges if present
+- **Wait until your LinkedIn feed loads completely** - this is critical!
+- Keep the browser window open until you see the session is saved
+
+#### Step 3: Session Saved
+
+Once the script detects you're logged in, it will automatically save your session to `linkedin_session.json` and close the browser.
+
+**Expected Output:**
+```
+LinkedIn Session Creator
+
+This script will help you create a session file for LinkedIn.
+
+Steps:
+1. A browser window will open
+2. Log in to LinkedIn manually
+3. The script will detect when you're logged in
+4. Your session will be saved to linkedin_session.json
+
+
+Opening LinkedIn login page...
+
+🔐 Please log in to LinkedIn in the browser window...
+   (You have 5 minutes to complete the login)
+
+⏳ Waiting for login completion...
+
+💾 Saving session to linkedin_session.json...
+
+✅ Success! Session file created.
+
+Session saved to: linkedin_session.json
+```
+
+#### Step 4: Protect Your Session File
+
+⚠️ **CRITICAL SECURITY WARNING**: 
+The `linkedin_session.json` file contains your authentication cookies and session tokens.
+
+**DO:**
+- ✅ Keep it in your project directory
+- ✅ Use it for all scraping operations
+- ✅ Regenerate it when session expires (typically every few days)
+
+**DO NOT:**
+- ❌ Commit it to Git or any public repository
+- ❌ Share it with anyone
+- ❌ Upload it to cloud storage
+- ❌ Post it publicly anywhere
+
+**Add to .gitignore:**
+```bash
+# Protect session files from accidental commits
+echo "linkedin_session.json" >> .gitignore
+echo "session.json" >> .gitignore
+```
+
+#### Troubleshooting Manual Login
+
+**Problem: Script doesn't detect login completion**
+
+**Solutions:**
+- Make sure you actually logged in (check if you see your feed)
+- Wait for your LinkedIn feed to load completely
+- Verify the browser didn't close unexpectedly
+- Check for CAPTCHA or 2FA that might be blocking
+
+**Problem: Session file not created**
+
+**Solutions:**
+- Run the script again with `python samples/create_session.py`
+- Check if you have write permissions in the current directory
+- Ensure you're logged into the correct LinkedIn account
+
+**Problem: Session expired too quickly**
+
+**Solutions:**
+- Regenerate the session file with `python samples/create_session.py`
+- Sessions typically last several days but can expire if:
+  - Your LinkedIn session times out
+  - You logged out elsewhere
+  - LinkedIn rotated session tokens
+
+---
+
+### Method 2: Programmatic Login (For Automation)
+
+For CI/CD or automated workflows, you can use credentials instead.
+
+#### Step 1: Set Environment Variables
+
+```bash
+# Linux/Mac
+export LINKEDIN_EMAIL="your.email@example.com"
+export LINKEDIN_PASSWORD="your_password_here"
+
+# Windows
+set LINKEDIN_EMAIL=your.email@example.com
+set LINKEDIN_PASSWORD=your_password_here
+```
+
+#### Step 2: Create Session Programmatically
 
 ```python
-from linkedin_scraper import BrowserManager, wait_for_manual_login
+import asyncio
+import os
+from linkedin_scraper import BrowserManager, login_with_credentials
 
 async def create_session():
     async with BrowserManager(headless=False) as browser:
         # Navigate to LinkedIn
         await browser.page.goto("https://www.linkedin.com/login")
         
-        # Wait for manual login (opens browser)
-        print("Please log in to LinkedIn...")
-        await wait_for_manual_login(browser.page, timeout=300)
-        
-        # Save session
-        await browser.save_session("session.json")
-        print("✓ Session saved!")
-
-asyncio.run(create_session())
-```
-
-### Option 2: Programmatic Login
-
-```python
-from linkedin_scraper import BrowserManager, login_with_credentials
-import os
-
-async def login():
-    async with BrowserManager(headless=False) as browser:
-        # Login with credentials
+        # Login programmatically
         await login_with_credentials(
             browser.page,
             username=os.getenv("LINKEDIN_EMAIL"),
@@ -246,9 +363,60 @@ async def login():
         )
         
         # Save session for reuse
-        await browser.save_session("session.json")
+        await browser.save_session("linkedin_session.json")
+        print("✅ Session saved programmatically!")
 
-asyncio.run(login())
+asyncio.run(create_session())
+```
+
+⚠️ **Warning**: LinkedIn may detect and block programmatic logins. Manual login is more reliable for most users. LinkedIn has sophisticated anti-bot measures.
+
+---
+
+### Method 3: Export Cookies from Browser (Advanced)
+
+If you already have an active LinkedIn session in your browser, you can extract the cookies.
+
+#### Firefox:
+1. Log into LinkedIn in Firefox
+2. Install "Cookie-Editor" extension (or similar cookie export tool)
+3. Click the extension icon → "Export Cookies"
+4. Select all LinkedIn cookies
+5. Export as JSON format
+6. Save as `linkedin_session.json` in your project directory
+
+#### Chrome:
+1. Log into LinkedIn in Chrome
+2. Install "EditThisCookie" extension (or similar cookie export tool)
+3. Click the extension icon → "Export All Cookies"
+4. Select all LinkedIn cookies
+5. Export as JSON format
+6. Save as `linkedin_session.json` in your project directory
+
+⚠️ **Important**: Make sure you export ALL LinkedIn cookies, not just authentication cookies. The scraper needs all LinkedIn cookies to work properly.
+
+---
+
+### Session File Locations
+
+The scraper searches for session files in this order:
+
+1. `linkedin_session.json` (current directory)
+2. `session.json` (current directory)
+3. `~/.linkedin_scraper/session.json` (home directory)
+
+You can specify a custom location:
+
+```python
+async with BrowserManager() as browser:
+    await browser.load_session("/path/to/your/session.json")
+    # ... rest of your scraping code
+```
+
+Or set an environment variable:
+
+```bash
+export LINKEDIN_SESSION_FILE="/path/to/your/session.json"
 ```
 
 ## Progress Tracking
