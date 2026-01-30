@@ -1,0 +1,20 @@
+{
+  "linkedin_session_file": "session.json",
+  "output_file": "multi_platform_jobs.json",
+  "webhook_url": "https://n8n.beesinthe.cloud/webhook/4194eb09-8437-460a-8f03-6727b531f0f0",
+  "searches": [
+    {
+      "keywords": "Programme Manager infrastructure",
+      "location": "United Kingdom",
+      "limit": 50,
+      "platforms": ["jobserve"],
+      "jobserve_url": "https://www.jobserve.com/gb/en/JobListing.aspx?shid=F5D7F302252DDB56C7A9&sq=%22INFRASTRUCTURE+PROJECT+MANAGER%22"
+    }
+  ],
+  "filters": {
+    "max_posted_days_ago": null,
+    "employment_types": ["Contract"],
+    "locations": ["United Kingdom", "UK", "England", "Remote"],
+    "exclude_keywords": []
+  }
+}
