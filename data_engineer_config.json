@@ -1,0 +1,19 @@
+{
+  "linkedin_session_file": "session.json",
+  "output_file": "data_engineer_jobs.json",
+  "webhook_url": "https://n8n.beesinthe.cloud/webhook/4194eb09-8437-460a-8f03-6727b531f0f0",
+  "searches": [
+    {
+      "keywords": "data engineer",
+      "location": "London",
+      "limit": 10,
+      "platforms": ["indeed"]
+    }
+  ],
+  "filters": {
+    "max_posted_days_ago": 14,
+    "employment_types": ["Contract", "Full-time", "Permanent"],
+    "locations": ["United Kingdom", "UK", "Remote", "England", "London"],
+    "exclude_keywords": ["Internship", "Apprentice"]
+  }
+}

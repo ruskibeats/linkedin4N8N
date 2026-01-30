@@ -18,6 +18,10 @@ tqdm>=4.65.0
 # HTML parsing
 beautifulsoup4>=4.12.0
 
+# Job scraping with jobspy
+python-jobspy>=1.1.0
+pandas>=2.3.0
+
 # Database
 sqlalchemy>=2.0.0
 psycopg2-binary>=2.9.0

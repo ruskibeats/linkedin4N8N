@@ -10,32 +10,45 @@ The multi-platform job scraper simultaneously searches multiple job boards, appl
 
 - **LinkedIn** - Full-featured scraping with session-based authentication
 - **JobServe** - Web scraping with full job description extraction
-- **Indeed** - Job listings (limited due to anti-bot measures)
+- **Indeed** (via jobspy) - Reliable scraping using python-jobspy library
 
-### ⚠️ Indeed Limitations
+### ✅ Indeed (via jobspy)
 
-Indeed.com has very strong anti-bot measures and frequently blocks automated scrapers:
+Indeed scraping uses the **python-jobspy** library which handles anti-bot measures automatically:
 
 **Current Status:**
-- Indeed returns **403 Forbidden** errors for automated requests
-- Scraping may work intermittently but is not reliable for production use
+- ✅ Working reliably with python-jobspy
+- ✅ Full job descriptions and metadata
+- ✅ No 403 errors
+- ✅ Support for multiple countries
 
-**Suggestions:**
-1. **Use Indeed API** - Official API is more reliable
-2. **Rate Limiting** - Add significant delays between requests
-3. **VPN/Proxy** - Try different IP addresses
-4. **Manual Scraping** - Use browser automation instead of direct HTTP requests
-5. **Alternative Sources** - Focus on LinkedIn + JobServe for reliable scraping
+**Requirements:**
+```bash
+pip install python-jobspy pandas
+```
 
-**When to Use Indeed Scraper:**
-- For testing and experimentation
-- When LinkedIn and JobServe don't cover your search needs
-- With understanding that it may not work consistently
+**Configuration:**
+```json
+{
+  "platforms": ["indeed"]
+}
+```
 
-**When NOT to Use Indeed Scraper:**
-- Production workflows requiring reliability
-- Automated schedules
-- Critical job searches where missing results is unacceptable
+**Features:**
+- Built-in anti-bot handling
+- Pandas DataFrame output
+- Full job descriptions
+- Salary information
+- Posted dates
+- Multiple countries supported (default: UK)
+
+**Supported Countries:**
+- `uk` - United Kingdom
+- `us` - United States
+- `ca` - Canada
+- And more...
+
+**Note:** python-jobspy uses sophisticated techniques to avoid detection, making it much more reliable than direct HTTP requests.
 
 ## Features
 
